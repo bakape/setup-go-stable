@@ -1,0 +1,20 @@
+name: "Setup Go stable"
+description: "setup latest stable Go version and cache the workspace"
+runs:
+  using: "composite"
+  steps:
+    - name: Get latest stable Go version
+      id: get-latest-go
+      shell: bash
+      run: |
+        LATEST=`wget -O- -q https://golang.org/VERSION?m=text | tr -d 'go'`
+        echo "::set-output name=version::$LATEST"
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ steps.get-latest-go.outputs.version }}
+    - name: Cache Go workspace
+      uses: actions/cache@v2
+      with:
+        path: ~/go
+        key: ${{ github.job }}-go_workspace
